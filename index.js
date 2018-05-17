@@ -81,10 +81,11 @@ class SettingsList extends React.Component {
 
   _groupView(group, index){
     if(group.header){
+      const borderColor = group.header.borderColor ? group.header.borderColor : this.props.borderColor
       return (
         <View key={'group_' + index}>
           <Text style={[{margin:5},group.header.headerStyle]} numberOfLines={group.header.headerNumberOfLines} ellipsizeMode="tail" ref={group.header.headerRef}>{group.header.headerText}</Text>
-          <View style={{borderTopWidth:1, borderBottomWidth:1, borderColor: this.props.borderColor}}>
+          <View style={{borderTopWidth:1, borderBottomWidth:1, borderColor: borderColor}}>
             {group.items.map((item, index) => {
               return this._itemView(item,index, group.items.length);
             })}
@@ -94,8 +95,10 @@ class SettingsList extends React.Component {
     } else {
       let items;
       if (group.items.length > 0) {
+        const firstItem = group.items[0];
+        const borderColor = firstItem.borderColor ? firstItem.borderColor : this.props.borderColor;
         items = (
-          <View style={{borderTopWidth:1, borderBottomWidth:1, borderColor: this.props.borderColor}}>
+          <View style={{borderTopWidth:1, borderBottomWidth:1, borderColor: borderColor}}>
             {group.items.map((item, index) => {
               return this._itemView(item,index, group.items.length);
             })}
@@ -162,17 +165,19 @@ class SettingsList extends React.Component {
   _itemView(item, index, max){
     var border;
 
+    const borderColor = item.borderColor ? item.borderColor : this.props.borderColor;
+
     if (item.type && item.type.displayName) {
         return item;
     }
 
     if(item.borderHide) {
       switch(item.borderHide) {
-        case 'Top' : border = {borderBottomWidth:1, borderColor: this.props.borderColor}; break;
-        case 'Bottom' : border = {borderTopWidth:1, borderColor: this.props.borderColor}; break;
+        case 'Top' : border = {borderBottomWidth:1, borderColor: borderColor}; break;
+        case 'Bottom' : border = {borderTopWidth:1, borderColor: borderColor}; break;
       }
     } else {
-      border = index === max-1 ? {borderWidth:0} : {borderBottomWidth:1, borderColor: this.props.borderColor};
+      border = index === max-1 ? {borderWidth:0} : {borderBottomWidth:1, borderColor: borderColor};
     }
 
     let titleInfoPosition = item.titleInfoPosition ? item.titleInfoPosition : this.props.defaultTitleInfoPosition;
@@ -184,7 +189,7 @@ class SettingsList extends React.Component {
           {item.isAuth ?
             <View style={item.titleBoxStyle ? item.titleBoxStyle : [styles.titleBox, border]}>
               <View style={{paddingLeft:5,flexDirection:'column',flex:1}}>
-                <View style={{borderBottomWidth:1,borderColor:this.props.borderColor}}>
+                <View style={{borderBottomWidth:1,borderColor:borderColor}}>
                   <TextInput
                     ref="UserNameInputBlock"
                     onSubmitEditing={() => this.refs.PasswordInputBlock.focus()}
@@ -279,6 +284,7 @@ SettingsList.Header = createReactClass({
     headerStyle: Text.propTypes.style,
     headerRef: PropTypes.func,
     headerNumberOfLines: PropTypes.number,
+    borderColor: PropTypes.string,
   },
   getDefaultProps() {
     return {
@@ -390,6 +396,8 @@ SettingsList.Item = createReactClass({
     rightSideContent: PropTypes.node,
     /* Gives opens to hide specific borders */
     borderHide: PropTypes.oneOf(['Top', 'Bottom', 'Both']),
+
+    borderColor: PropTypes.string,
 
     itemRef: PropTypes.func,
   },
